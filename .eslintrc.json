@@ -4,6 +4,7 @@
         "eslint:recommended"
     ],
     "rules": {
-        "quotes": "error"
+        "quotes": "error",
+        "semi": "error"
     }
 }

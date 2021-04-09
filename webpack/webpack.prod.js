@@ -1,6 +1,6 @@
 require("webpack");
 const { merge } = require("webpack-merge");
-const TerserJSPlugin = require("terser-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const common = require("./webpack.config");
 
@@ -17,6 +17,6 @@ module.exports = merge(common, {
     // Optimization for the production bundle
     optimization: {
         // Use TerserJS to minify and obfuscate the production code.
-        minimizer: [new TerserJSPlugin()]
+        minimizer: [new TerserPlugin()]
     }
 });

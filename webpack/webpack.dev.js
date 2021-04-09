@@ -23,5 +23,12 @@ module.exports = merge(common, {
 
     // Configure hot module replacement so code for individual modules can be hot-swapped when they're rebuilt instead
     // of requiring a page refresh. Works in conjunction with the dev server and its hot-reloading.
-    plugins: [new webpack.HotModuleReplacementPlugin()]
+    plugins: [new webpack.HotModuleReplacementPlugin()],
+
+    // To support react-hot-loader
+    resolve: {
+        alias: {
+            "react-dom": "@hot-loader/react-dom",
+        },
+    }
 });
