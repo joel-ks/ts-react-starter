@@ -1,7 +1,23 @@
-const webpack = require("webpack");
-const { merge } = require("webpack-merge");
+require("webpack");
+const { mergeWithRules } = require("webpack-merge");
+const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript').default;
 
 const common = require("./webpack.config");
+
+// https://github.com/survivejs/webpack-merge#mergewithrules
+// To support customizing ts-loader for react-refresh
+const merge = mergeWithRules({
+    module: {
+        rules: {
+            test: "match",
+            use: {
+                loader: "match",
+                options: "replace",
+            },
+        },
+    },
+});
 
 // Use webpack-merge to merge the common configuration into this.
 module.exports = merge(common, {
@@ -13,6 +29,21 @@ module.exports = merge(common, {
     // https://webpack.js.org/configuration/devtool/
     devtool: "inline-source-map",
 
+    module: {
+        rules: [
+            {
+                test: /\.[jt]sx?$/,
+                use: [{
+                    loader: "ts-loader",
+                    // https://github.com/pmmmwh/react-refresh-webpack-plugin/#with-ts-loader
+                    options: {
+                        getCustomTransformers: () => ({ before: [ReactRefreshTypeScript()] })
+                    }
+                }]
+            }
+        ]
+    },
+
     // Configure a development server with hot reloading. This will watch the files included in the bundle, rebuild the
     // bundle when they're modified, and trigger a refresh of the page in the browser.
     devServer: {
@@ -21,14 +52,8 @@ module.exports = merge(common, {
         hot: true
     },
 
-    // Configure hot module replacement so code for individual modules can be hot-swapped when they're rebuilt instead
-    // of requiring a page refresh. Works in conjunction with the dev server and its hot-reloading.
-    plugins: [new webpack.HotModuleReplacementPlugin()],
-
-    // To support react-hot-loader
-    resolve: {
-        alias: {
-            "react-dom": "@hot-loader/react-dom",
-        },
-    }
+    // React-refresh gives us hot reloading of React components
+    plugins: [
+        new ReactRefreshPlugin()
+    ]
 });

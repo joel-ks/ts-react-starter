@@ -1,6 +1,5 @@
 require("webpack");
 const path = require("path");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 module.exports = {
     // File which is the entry point for the app. Webpack will walk the tree of all modules imported by this and bundle
@@ -26,26 +25,15 @@ module.exports = {
     module: {
         // Rules modify how modules are created.
         rules: [
-            // Use babel-loader to process JavaScript files (except for those in node_modules - assuming they've
-            // already been processed by Babel).
             {
                 test: /\.[jt]sx?$/,
                 include: path.resolve(__dirname, "../src/app"),
-                use: ["babel-loader"]
+                use: [{
+                    // Need to but ts-loader in an object as the dev config needs to customize it to get react-refresh
+                    // working for hot module replacement
+                    loader: "ts-loader"
+                }]
             }
         ]
-    },
-
-    plugins: [
-        // Since we're using babel-loader only to process TS files and it doesn't type-check use this to check types at build
-        new ForkTsCheckerWebpackPlugin({
-            // Files paths are relative to the directory we're running from, not the webpack directory
-            typescript: {
-                configFile: "./src/tsconfig.json"
-            },
-            eslint: {
-                files: ["./src/app", "./src/static"] // Don't lint tests during the build
-            }
-        })
-    ]
+    }
 };
